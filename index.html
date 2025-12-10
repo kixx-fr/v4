@@ -128,10 +128,47 @@
         }
 
         /* 3. NOUVELLE CORRECTION : Masquage de la barre de recherche en mode portrait mobile */
-        /* La barre de recherche est masquée sur les petits écrans (portrait), mais reste visible sur les écrans plus larges (paysage/tablette/desktop) */
         @media (max-width: 599px) and (orientation: portrait) {
             .search-container {
                 display: none !important;
+            }
+        }
+        
+        /* 4. NOUVELLE CORRECTION CRITIQUE : Ergonomie Checkout Mobile (Code Promo et Paiement) */
+        @media (max-width: 600px) {
+            /* 4a. Ajuster le conteneur du code promo pour qu'il soit plus compact */
+            .promo-code-container {
+                /* Réduit la largeur du champ d'entrée */
+                width: 100%;
+                /* Assure que l'input et le bouton sont disposés de manière flexible */
+                display: flex;
+                gap: 5px;
+            }
+            /* L'input prend 80% de l'espace, le bouton prend 20% (ou s'ajuste) */
+            .promo-code-container input#promo-code-input {
+                flex: 4; /* Prend 4/5 de l'espace */
+                max-width: 80%;
+            }
+            .promo-code-container button#apply-promo-btn {
+                flex: 1; /* Prend 1/5 de l'espace */
+                min-width: 50px;
+                padding: 8px; /* Assure que la hauteur correspond à l'input */
+            }
+            
+            /* 4b. Ajuster les boutons de paiement pour une meilleure lisibilité */
+            .payment-method-selector {
+                /* Permet aux boutons de s'enrouler sur plusieurs lignes */
+                display: flex;
+                flex-wrap: wrap; 
+                gap: 5px; 
+            }
+            .payment-method-selector .pay-btn-select {
+                /* Permet à chaque bouton d'occuper la moitié de la largeur */
+                flex: 1 1 48%; 
+                margin: 0;
+                padding: 10px 5px; /* Réduire le padding horizontal */
+                font-size: 0.85rem; /* Rendre la police plus petite */
+                text-align: center;
             }
         }
         
@@ -474,7 +511,7 @@
                         </div>
 
                         <div class="promo-code-container" style="display:flex; gap:5px; margin-bottom:15px;">
-                            <input type="text" id="promo-code-input" placeholder="Code Promo" style="padding:8px; border:1px solid #ddd; border-radius:4px; flex:1;">
+                            <input type="text" id="promo-code-input" placeholder="Code Promo" autocomplete="off" style="padding:8px; border:1px solid #ddd; border-radius:4px; flex:1;">
                             <button id="apply-promo-btn">OK</button>
                         </div>
                         <div id="promo-message" style="font-size:0.8rem; margin-bottom:10px;"></div>
