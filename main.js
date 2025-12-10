@@ -48,7 +48,7 @@ let state = {
     filterBrand: 'all',
     currentSizeFilter: '',
     currentCategoryFilter: '',
-    currentSort: 'default', // <<<<<< NOUVEL ÉTAT DE TRI
+    currentSort: 'default', 
     
     currentPage: 1,
     
@@ -64,7 +64,8 @@ let state = {
 /* --- 3. UTILITAIRES FONDAMENTAUX --- */
 
 function isMobileOrTablet() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 1024;
+    // La barre de recherche est visible au-delà de 599px (paysage/tablette), donc 600px est notre seuil de 'desktop' pour la recherche.
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 600;
 }
 
 function formatPrice(amount) {
@@ -342,7 +343,7 @@ function generateFilters() {
     
     if (!container) return;
     
-    // Si mobile, on vide le contenu pour tout réinsérer proprement (incluant le nouveau filtre de tri)
+    // Si mobile, on vide le contenu pour tout réinsérer proprement (incluant le nouveau filtre de tri et la barre de recherche)
     if (isMobileOrTablet()) container.innerHTML = ''; 
 
     // MARQUE
@@ -493,6 +494,7 @@ function renderCatalog(resetPage = false) {
     const loader = document.querySelector('.load-trigger');
     if(loader) loader.style.display = 'none';
 }
+// SUITE DE LA PREMIÈRE PARTIE DU FICHIER MAIN.JS...
 
 // 💥 MISE À JOUR CRITIQUE : Création de la Carte Produit (Prix Barré & Survol Image & Badge Rupture)
 function createProductCard(product) {
@@ -888,7 +890,7 @@ function updateCartUI() {
     if(totalEl) totalEl.innerText = formatPrice(total); if(qtyEl) qtyEl.innerText = count;
 }
 
-// --- RECHERCHE (Ajustée pour Mobile) ---
+// --- RECHERCHE (MISE À JOUR CRITIQUE POUR GÉRER LE DÉPLACEMENT MOBILE) ---
 function initSearch() {
     const input = document.getElementById('search-input'); 
     const resultsBox = document.getElementById('search-results'); 
@@ -896,9 +898,13 @@ function initSearch() {
     
     if (!input || !resultsBox || !searchBtn) return;
 
+    // Déjà fait dans setupMobileFilters pour le déplacement
+    // On s'assure juste que les résultats sont masqués par défaut sur mobile (même si c'est géré par initSearch)
     if (isMobileOrTablet()) {
         resultsBox.classList.add('hidden');
     }
+
+    // Le reste de la logique de recherche est inchangée et fonctionne après le déplacement du DOM.
 
     input.addEventListener('input', (e) => {
         const q = e.target.value.toLowerCase().trim(); 
@@ -936,7 +942,7 @@ function initSearch() {
 
 function updateThemeIcons(isDark) { const sun = document.querySelector('.icon-sun'); const moon = document.querySelector('.icon-moon'); if (sun && moon) { sun.classList.toggle('hidden', isDark); moon.classList.toggle('hidden', !isDark); moon.style.color = isDark ? "#ffffff" : "inherit"; } }
 
-/* --- LOGIQUE MOBILE ET OFF-CANVAS --- */
+/* --- LOGIQUE MOBILE ET OFF-CANVAS (MISE À JOUR CRITIQUE) --- */
 
 function setupMobileFilters() {
     const isMobile = isMobileOrTablet();
@@ -945,15 +951,42 @@ function setupMobileFilters() {
     const mobileTrigger = document.getElementById('mobile-menu-trigger');
     const filterDrawer = document.getElementById('mobile-filter-drawer');
     const applyBtn = document.getElementById('apply-filters-btn');
+    
+    // NOUVELLE LOGIQUE DE DÉPLACEMENT DE LA BARRE DE RECHERCHE
+    const searchContainer = document.querySelector('.search-container');
+    const headerContainer = document.querySelector('.header-container'); // Conteneur d'origine dans le header
 
-    if (isMobile && filterBar && mobileContent && filterDrawer) {
+    if (!mobileContent || !searchContainer || !headerContainer) return;
+
+
+    if (isMobile) {
+        // 1. DÉPLACER LA BARRE DE RECHERCHE DANS LE TIROIR MOBILE
+        // On vérifie qu'elle n'est pas déjà dans le tiroir avant de la déplacer
+        if (!mobileContent.contains(searchContainer)) {
+            // Créer un wrapper pour la recherche dans le tiroir afin d'améliorer la présentation
+            const searchWrapper = document.createElement('div');
+            searchWrapper.id = 'mobile-search-wrapper';
+            searchWrapper.style.cssText = 'padding: 10px 0; border-bottom: 1px solid var(--border-color); margin-bottom: 15px;';
+            searchWrapper.appendChild(searchContainer);
+            
+            // Insérer la recherche en HAUT du contenu mobile, avant les filtres
+            mobileContent.prepend(searchWrapper);
+            searchContainer.style.display = 'block'; // S'assurer qu'elle est visible dans le tiroir
+        }
+
+        // 2. Déplacer les filtres si nécessaire (Logique existante)
         if (filterBar.children.length > 0) {
             const fragment = document.createDocumentFragment();
             while (filterBar.firstChild) {
                 fragment.appendChild(filterBar.firstChild);
             }
-            mobileContent.innerHTML = '';
-            mobileContent.appendChild(fragment);
+            // Retirer le paragraphe "Chargement des filtres..."
+            mobileContent.innerHTML = ''; 
+            // Réinsérer la barre de recherche en premier (elle a été enlevée temporairement)
+            mobileContent.appendChild(searchContainer.parentElement);
+            // Ajouter les filtres après la barre de recherche
+            mobileContent.appendChild(fragment); 
+
             filterBar.style.display = 'none';
         }
 
@@ -967,17 +1000,37 @@ function setupMobileFilters() {
         if (applyBtn) {
             applyBtn.addEventListener('click', () => {
                 closePanel(filterDrawer);
-                // Le tri et le filtre sont déjà appliqués via les event listeners "onchange" dans generateFilters.
-                // On s'assure juste que le catalogue est rafraîchi (même si l'un des filtres a déjà dû le faire)
                 renderCatalog(true); 
             });
         }
 
-    } else if (!isMobile && filterBar) {
-        filterBar.style.display = 'flex';
+    } else { 
+        // Mode Desktop/Paysage (Plus grand que 600px)
+        
+        // 1. DÉPLACER LA BARRE DE RECHERCHE DANS L'EN-TÊTE
+        if (!headerContainer.contains(searchContainer)) {
+            // Réinsérer le searchContainer à sa place d'origine dans le header-actions
+            const headerActions = document.querySelector('.header-actions');
+            // Trouver le bon emplacement dans le header (avant header-actions)
+            if (headerActions && searchContainer.parentElement.id === 'mobile-search-wrapper') {
+                 // Remettre le conteneur de recherche au bon endroit dans le header-container
+                headerContainer.insertBefore(searchContainer, headerActions);
+                // Supprimer le wrapper mobile (qui est un enfant de mobileContent)
+                const mobileWrapper = document.getElementById('mobile-search-wrapper');
+                if(mobileWrapper) mobileWrapper.remove();
+                
+                searchContainer.style.display = ''; // Rétablir l'affichage normal pour desktop/paysage
+            }
+        }
+        
+        // 2. Afficher la barre de filtres sous le header (Logique existante)
+        if (filterBar) {
+            filterBar.style.display = 'flex';
+        }
         const mobileTrigger = document.getElementById('mobile-menu-trigger');
         if (mobileTrigger) mobileTrigger.classList.add('hidden');
     }
+    // FIN NOUVELLE LOGIQUE DE DÉPLACEMENT DE LA BARRE DE RECHERCHE
 }
 /* =================================================================
    ⚡ KICKS FRONTEND V32.6 (CORRECTIONS VITALES & V45.0 INTÉGRATION)
