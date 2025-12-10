@@ -48,6 +48,7 @@ let state = {
     filterBrand: 'all',
     currentSizeFilter: '',
     currentCategoryFilter: '',
+    currentSort: 'default', // <<<<<< NOUVEL ÉTAT DE TRI
     
     currentPage: 1,
     
@@ -340,6 +341,8 @@ function generateFilters() {
         document.getElementById('filters-bar');
     
     if (!container) return;
+    
+    // Si mobile, on vide le contenu pour tout réinsérer proprement (incluant le nouveau filtre de tri)
     if (isMobileOrTablet()) container.innerHTML = ''; 
 
     // MARQUE
@@ -385,7 +388,52 @@ function generateFilters() {
     });
     sizeSelect.onchange = (e) => { state.currentSizeFilter = e.target.value; renderCatalog(true); };
     container.appendChild(sizeSelect);
+    
+    // <<<<<< NOUVEAU FILTRE DE TRI (PRIX/ALPHABÉTIQUE)
+    const sortOptions = [
+        { value: 'default', label: 'Ordre par défaut' },
+        { value: 'price_asc', label: 'Prix croissant (Moins cher)' },
+        { value: 'price_desc', label: 'Prix décroissant (Plus cher)' },
+        { value: 'name_asc', label: 'Nom A-Z' },
+        { value: 'name_desc', label: 'Nom Z-A' }
+    ];
+    const sortSelect = document.createElement('select');
+    sortSelect.innerHTML = '<option value="" disabled>Trier par...</option>';
+    sortSelect.className = 'sort-select';
+    
+    sortOptions.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.value; opt.textContent = s.label;
+        if (s.value === state.currentSort) opt.selected = true;
+        sortSelect.appendChild(opt);
+    });
+    sortSelect.onchange = (e) => { 
+        state.currentSort = e.target.value; 
+        renderCatalog(true); 
+    };
+    container.appendChild(sortSelect);
+    // FIN NOUVEAU FILTRE DE TRI
 }
+
+// <<<<<< NOUVELLE FONCTION DE TRI
+function applySorting(products) {
+    switch(state.currentSort) {
+        case 'price_asc':
+            return products.sort((a, b) => a.price - b.price);
+        case 'price_desc':
+            return products.sort((a, b) => b.price - a.price);
+        case 'name_asc':
+            return products.sort((a, b) => a.model.localeCompare(b.model));
+        case 'name_desc':
+            return products.sort((a, b) => b.model.localeCompare(a.model));
+        case 'default':
+        default:
+            // Revient au tri par marque (chargé initialement dans fetchProducts)
+            return products.sort((a, b) => a.brand.localeCompare(b.brand));
+    }
+}
+// FIN NOUVELLE FONCTION DE TRI
+
 
 function renderCategoryHero(category) {
     const heroSection = document.getElementById('category-hero-section');
@@ -420,6 +468,10 @@ function renderCatalog(resetPage = false) {
     if (state.filterBrand !== 'all') filtered = filtered.filter(p => p.brand && p.brand.toLowerCase() === state.filterBrand);
     if (state.currentSizeFilter) filtered = filtered.filter(p => p.sizesList && p.sizesList.includes(state.currentSizeFilter));
     if (state.currentCategoryFilter) filtered = filtered.filter(p => p.category === state.currentCategoryFilter);
+    
+    // <<<<<< APPLICATION DU TRI APRÈS FILTRAGE
+    filtered = applySorting(filtered);
+    // FIN APPLICATION DU TRI
 
     const countEl = document.getElementById('result-count');
     if (countEl) countEl.innerText = `${filtered.length} paires`;
@@ -702,8 +754,10 @@ function openProductModal(product) {
 
 
     openPanel(modal);
+    // Correction de défilement manuel (même si le CSS est censé le gérer, c'est une bonne pratique)
     if(isMobileOrTablet()) {
-        modal.querySelector('.modal-content').scrollTop = 0;
+        const modalContent = modal.querySelector('.modal-content');
+        if(modalContent) modalContent.scrollTop = 0;
     }
 }
 
@@ -913,6 +967,9 @@ function setupMobileFilters() {
         if (applyBtn) {
             applyBtn.addEventListener('click', () => {
                 closePanel(filterDrawer);
+                // Le tri et le filtre sont déjà appliqués via les event listeners "onchange" dans generateFilters.
+                // On s'assure juste que le catalogue est rafraîchi (même si l'un des filtres a déjà dû le faire)
+                renderCatalog(true); 
             });
         }
 
