@@ -126,12 +126,20 @@
                 grid-template-columns: repeat(4, 1fr) !important;
             }
         }
+
+        /* 3. NOUVELLE CORRECTION : Masquage de la barre de recherche en mode portrait mobile */
+        /* La barre de recherche est masquée sur les petits écrans (portrait), mais reste visible sur les écrans plus larges (paysage/tablette/desktop) */
+        @media (max-width: 599px) and (orientation: portrait) {
+            .search-container {
+                display: none !important;
+            }
+        }
         
         /* Fin des corrections CSS ajoutées */
     </style>
 </head>
 
-<body data-api-url="https://script.google.com/macros/s/AKfycbxa7AAkPnQ8be1WTLCbW00fbbUaFKhxJn3lut28-E4JQAxmgUhxHSp994mY3vYiVzFm/exec">
+<body data-api-url="https://kicks.kazabasket.workers.dev/api/main">
 
     <div id="splash-screen">
         <audio id="christmas-music" src="assets/jingle-bells.mp3" loop preload="auto"></audio>
@@ -507,7 +515,7 @@
             </div>
             <div id="mobile-filters-content" class="drawer-body">
                 <p style="text-align: center; color: var(--text-muted);">Chargement des filtres...</p>
-            </div>
+                </div>
             <div class="drawer-footer">
                 <button id="apply-filters-btn" class="btn-primary full-width">APPLIQUER LES FILTRES</button>
             </div>
