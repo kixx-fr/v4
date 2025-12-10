@@ -12,7 +12,7 @@ const CONFIG = {
     RECAPTCHA_SITE_KEY: "6LdxFA4sAAAAAGi_sahJ3mfLrh4jsFWNXW8cfY2v", 
 
     // 💳 CLÉ PUBLIQUE STRIPE (Vérifiez qu'elle est correcte)
-    STRIPE_PUBLIC_KEY: "pk_test_51SX7GXB71iIdXpRK4JRFkiNtSLRBGQ1FUy7LO221DNieNAQYQdSiqi8nJ8gGaoidBnha6JfUgItsWhCjfhHjtUWS00VkybROXf", 
+    STRIPE_PUBLIC_KEY: "pk_test_51SX7GXB71iIdXpRK4JRFkiNtSLRBGQ1FUy7LO221DNieNAQYQdSiqi8nJ8gGaoidBnha6JfUgItsWhCjfhJjtUWS00VkybROXf", 
 
     PRODUCTS_PER_PAGE: 10,       // Pagination catalogue
     MAX_QTY_PER_CART: 5,         // Limite anti-revendeurs
@@ -64,7 +64,7 @@ let state = {
 /* --- 3. UTILITAIRES FONDAMENTAUX --- */
 
 function isMobileOrTablet() {
-    // La barre de recherche est visible au-delà de 599px (paysage/tablette), donc 600px est notre seuil de 'desktop' pour la recherche.
+    // Seuil à 600px pour aligner avec le masquage CSS de la barre de recherche
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 600;
 }
 
@@ -343,7 +343,7 @@ function generateFilters() {
     
     if (!container) return;
     
-    // Si mobile, on vide le contenu pour tout réinsérer proprement (incluant le nouveau filtre de tri et la barre de recherche)
+    // Si mobile, on vide le contenu pour tout réinsérer proprement (incluant le nouveau filtre de tri)
     if (isMobileOrTablet()) container.innerHTML = ''; 
 
     // MARQUE
@@ -898,13 +898,9 @@ function initSearch() {
     
     if (!input || !resultsBox || !searchBtn) return;
 
-    // Déjà fait dans setupMobileFilters pour le déplacement
-    // On s'assure juste que les résultats sont masqués par défaut sur mobile (même si c'est géré par initSearch)
     if (isMobileOrTablet()) {
         resultsBox.classList.add('hidden');
     }
-
-    // Le reste de la logique de recherche est inchangée et fonctionne après le déplacement du DOM.
 
     input.addEventListener('input', (e) => {
         const q = e.target.value.toLowerCase().trim(); 
@@ -954,14 +950,13 @@ function setupMobileFilters() {
     
     // NOUVELLE LOGIQUE DE DÉPLACEMENT DE LA BARRE DE RECHERCHE
     const searchContainer = document.querySelector('.search-container');
-    const headerContainer = document.querySelector('.header-container'); // Conteneur d'origine dans le header
+    const headerContainer = document.querySelector('.header-container'); 
 
     if (!mobileContent || !searchContainer || !headerContainer) return;
 
 
     if (isMobile) {
         // 1. DÉPLACER LA BARRE DE RECHERCHE DANS LE TIROIR MOBILE
-        // On vérifie qu'elle n'est pas déjà dans le tiroir avant de la déplacer
         if (!mobileContent.contains(searchContainer)) {
             // Créer un wrapper pour la recherche dans le tiroir afin d'améliorer la présentation
             const searchWrapper = document.createElement('div');
@@ -1030,7 +1025,6 @@ function setupMobileFilters() {
         const mobileTrigger = document.getElementById('mobile-menu-trigger');
         if (mobileTrigger) mobileTrigger.classList.add('hidden');
     }
-    // FIN NOUVELLE LOGIQUE DE DÉPLACEMENT DE LA BARRE DE RECHERCHE
 }
 /* =================================================================
    ⚡ KICKS FRONTEND V32.6 (CORRECTIONS VITALES & V45.0 INTÉGRATION)
@@ -1107,6 +1101,15 @@ function setupGlobalListeners() {
 
 
 function initCheckoutUI() {
+    // S'assurer que le bouton de virement a le bon listener après chaque ouverture de UI
+    const btnVirement = document.getElementById('btn-pay-virement');
+    if (btnVirement) {
+        // On retire l'ancien listener pour éviter les doublons
+        btnVirement.removeEventListener('click', initiateBankTransferWrapper);
+        // On ajoute le nouveau listener
+        btnVirement.addEventListener('click', initiateBankTransferWrapper);
+    }
+    
     state.currentPaymentMethod = "CARD";
     state.appliedPromoCode = null;
     state.promoDiscountAmount = 0;
@@ -1142,6 +1145,20 @@ function initCheckoutUI() {
     updateCheckoutTotal();
     initAutocomplete();
     initFormNavigation(); 
+}
+
+// Wrapper pour s'assurer que la validation du formulaire a lieu avant le virement
+function initiateBankTransferWrapper() {
+    const customer = getFormData(); // Tente de valider et récupérer les données
+    if (customer) {
+        // Si les données sont valides et la livraison est choisie, on lance le virement
+        if (!state.currentShippingRate) { 
+            alert("Veuillez choisir la livraison."); 
+            return; 
+        }
+        initiateBankTransfer(customer);
+    } 
+    // Si customer est null, getFormData() a déjà affiché l'alerte
 }
 
 // ✅ NAVIGATION FORMULAIRE (TOUCHE ENTRÉE)
@@ -1384,7 +1401,7 @@ function updateCheckoutTotal() {
     const payLabel = document.getElementById('btn-pay-label');
     if (payLabel) {
         if (state.currentPaymentMethod === 'KLARNA') payLabel.innerText = `🌸 Payer ${formatPrice(grandTotal)}`;
-        else if (state.currentPaymentMethod === 'CARD') payLabel.innerText = `💳 Payer ${formatPrice(grandTotal)}`;
+        else if (state.currentPaymentMethod === 'CARD') payLabel.innerText = `💳 Payer par Carte`;
     }
 }
 
@@ -1394,13 +1411,18 @@ function initPaymentButtonsArea() {
     let btnVirement = document.getElementById('btn-pay-virement');
     const payActions = document.querySelector('.payment-actions');
     
+    // Assure la création du bouton de virement si nécessaire
     if (!btnVirement && payActions) {
         btnVirement = document.createElement('button');
         btnVirement.id = 'btn-pay-virement'; btnVirement.className = 'btn-primary full-width hidden';
         btnVirement.innerText = "💶 Confirmer le Virement";
-        btnVirement.onclick = initiateBankTransfer;
+        // NOTE : L'écouteur est ajouté dans initCheckoutUI
         payActions.appendChild(btnVirement);
     }
+    
+    // Récupération de la référence après vérification/création
+    btnVirement = document.getElementById('btn-pay-virement');
+
 
     const stripeBtn = document.getElementById('btn-pay-stripe');
     const paypalDiv = document.getElementById('paypal-button-container');
@@ -1408,6 +1430,7 @@ function initPaymentButtonsArea() {
 
     if(stripeBtn) {
         stripeBtn.classList.add('hidden');
+        // Remplacement pour s'assurer que le listener est propre
         const newBtn = stripeBtn.cloneNode(true);
         stripeBtn.parentNode.replaceChild(newBtn, stripeBtn);
         newBtn.addEventListener('click', handleStripePayment);
@@ -1420,18 +1443,17 @@ function initPaymentButtonsArea() {
         if(btnVirement) btnVirement.classList.remove('hidden');
     } else if (method === 'PAYPAL_4X') {
         if(paypalDiv) { paypalDiv.classList.remove('hidden'); initPayPalButtons(); }
-    } else {
+    } else { // CARD / KLARNA
         const sBtn = document.getElementById('btn-pay-stripe');
         if(sBtn) sBtn.classList.remove('hidden');
     }
 }
 
 // A. VIREMENT (Backend: recordManualOrder)
-function initiateBankTransfer() {
+function initiateBankTransfer(customer) {
     const recaptchaToken = getRecaptchaResponse();
     if (!recaptchaToken) { alert(CONFIG.MESSAGES.ERROR_RECAPTCHA); return; }
-    const customer = getFormData(); if (!customer) return;
-    if (!state.currentShippingRate) { alert("Veuillez choisir la livraison."); return; }
+    // Les checks client et shippingRate sont faits dans initiateBankTransferWrapper
     
     const subTotal = state.cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
     const shippingCost = state.currentShippingRate ? parseFloat(state.currentShippingRate.price) : 0;
@@ -1441,7 +1463,13 @@ function initiateBankTransfer() {
     const fees = 0;
     const total = baseTotal + fees;
 
-    const btn = document.getElementById('btn-pay-virement'); btn.disabled = true; btn.innerText = "Traitement...";
+    const btn = document.getElementById('btn-pay-virement'); 
+    
+    // Vérification finale et désactivation/texte
+    if (btn) {
+        btn.disabled = true; 
+        btn.innerText = "Traitement...";
+    }
     
     const payload = { 
         action: 'recordManualOrder', 
@@ -1462,11 +1490,18 @@ function initiateBankTransfer() {
             localStorage.removeItem('kicks_cart'); 
             state.cart = []; updateCartUI();
             
+            // NOTE : Le RIB est lu depuis le backend V45.0, donc il est safe
             const ribDetails = state.siteContent.RIB || "IBAN: N/A, BIC: N/A";
             const ribHtml = `<div style="text-align:left; background:var(--bg-secondary); color:var(--text-primary); padding:20px; border-radius:8px; margin-top:20px; font-size:0.9rem;"><h3>Détails du Virement</h3><p>Montant à régler : <strong>${formatPrice(total)}</strong></p><p>Référence : <strong>${res.id}</strong></p><p>${ribDetails}</p><p style="color:red; font-weight:bold;">*Votre commande sera expédiée après réception et vérification du virement.</p></div>`;
             showSuccessScreen(customer.prenom, `Commande enregistrée (Réf: ${res.id}). Veuillez effectuer le virement bancaire pour validation.` + ribHtml);
         })
-        .catch(e => { alert("Erreur: "+e.message); btn.disabled = false; btn.innerText = "💶 Confirmer le Virement"; });
+        .catch(e => { 
+            alert("Erreur: "+e.message); 
+            if (btn) {
+                btn.disabled = false; 
+                btn.innerText = "💶 Confirmer le Virement"; 
+            }
+        });
 }
 
 // B. STRIPE (Backend: createCheckoutSession)
@@ -1591,7 +1626,8 @@ function getFormData() {
     const requiredFields = { email: 'ck-email', prenom: 'ck-prenom', nom: 'ck-nom', tel: 'ck-tel', adresse: 'ck-adresse', cp: 'ck-cp', ville: 'ck-ville' };
     
     for (let key in requiredFields) {
-        if (!val(requiredFields[key])) { 
+        const value = val(requiredFields[key]);
+        if (!value) { 
             alert(`Veuillez remplir le champ : ${key.toUpperCase()}.`); 
             return null; 
         }
