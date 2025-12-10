@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="KICKS - La référence sneakers exclusives. Livraison 48H authenticité garantie." id="meta-description">
     <title id="meta-title">KICKS | Sneakers Exclusives</title>
+    
     <link rel="icon" type="image/png" href="assets/logot.png">
 
     <meta property="og:title" content="KICKS - Sneakers Shop">
@@ -21,612 +22,385 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-
-    <script src="https://www.paypal.com/sdk/js?client-id=BA_Xk_...&currency=EUR&components=buttons,messages"></script>
-    <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
-
-    <style>
-        /* CSS du Splash Screen (Inchangé de l'original) */
-        #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0d4232; z-index: 10000; display: flex;
-            justify-content: center; align-items: center;
-            font-family: 'Inter', sans-serif; color: #f7f7f7; text-align: center;
-            transition: opacity 0.8s ease-out, visibility 0.8s;
-        }
-        #splash-screen .nwel-container {
-            background: #990000; border: 5px solid #ffcc00; border-radius: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8); width: 95%; max-width: 450px;
-            padding: 30px 20px; position: relative; transition: transform 0.3s ease; box-sizing: border-box;
-        }
-        @media (max-width: 480px) {
-            #splash-screen .nwel-container { transform: scale(0.88); transform-origin: top center; }
-        }
-        #splash-screen .logo-container {
-            width: 80px; height: 80px; margin: 0 auto 15px; border-radius: 50%;
-            overflow: hidden; border: 4px solid #ffcc00; box-shadow: 0 0 15px rgba(255,204,0,0.8);
-            background: white;
-        }
-        #splash-screen .logo-container img { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
-        #splash-screen h1 {
-            font-size: 26px; color: #ffcc00; margin-bottom: 10px; font-family: 'Inter', sans-serif; text-transform: none;
-        }
-        #splash-screen p { font-weight: 500; line-height: 1.5; margin-bottom: 20px; color: #f7f7f7; }
-        #splash-screen .pulsing-text {
-            display: inline-block; font-size: 1.2em; font-weight: 700; color: #ffcc00;
-            animation: textPulse 1s infinite alternate;
-        }
-        @keyframes textPulse {
-            from { text-shadow: 0 0 8px #ffcc00; transform: scale(1); }
-            to   { text-shadow: 0 0 20px #ffcc00; transform: scale(1.05); }
-        }
-        #start-button {
-            background: #ffcc00; color: #990000; border: 3px solid #ffcc00;
-            padding: 12px 25px; font-size: 1.1em; font-weight: bold; border-radius: 12px;
-            cursor: pointer; box-shadow: 0 0 15px rgba(255, 204, 0, 0.7);
-            transition: all 0.3s; width: 100%; margin-top: 15px; font-family: 'Inter', sans-serif;
-        }
-        #start-button:hover {
-            background: #f7f7f7; color: #0f4c3a; box-shadow: 0 0 25px #f7f7f7; transform: scale(1.03);
-        }
-        #splash-screen .timer { font-size: 20px; color: #ffcc00; margin-top: 15px; font-weight: bold; display: none; }
-        #splash-screen .payments {
-            margin-top: 25px; display: flex; flex-wrap: wrap; justify-content: center;
-            gap: 10px 12px; padding-bottom: 10px;
-        }
-        #splash-screen .payments img {
-            border: 2px solid #ffcc00; border-radius: 8px; padding: 5px;
-            display: block; object-fit: contain; max-height: 55px; width: auto; background: #f7f7f7;
-        }
-        #splash-screen .credit-text-box {
-            background: #000; border: 1px solid #ffcc00; border-radius: 4px;
-            padding: 8px; font-size: 0.7em; line-height: 1.4; width: 85%;
-            margin: 12px auto 0; text-align: left; color: #f7f7f7;
-        }
-		
-        /* === CORRECTIONS VITALES V32.6 : Défilement & Optimisation Mobile === */
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     
-        /* 1. Correction critique : Défilement vertical des modales (Produit, Checkout, Textes) sur mobile/tablette */
-        @media (max-width: 1024px) {
-            .modal-content {
-                /* Fixe la hauteur maximale à la fenêtre visible pour permettre le défilement */
-                height: 100%; 
-                max-height: 100vh;
-                overflow-y: auto; /* Active le défilement si le contenu est plus grand que la hauteur disponible */
-                -webkit-overflow-scrolling: touch; /* Améliore le défilement sur iOS */
-            }
-            
-            /* Assure que la modale produit utilise toute la hauteur pour que .modal-content puisse défiler */
-            #product-modal .modal-content {
-                padding-bottom: 80px; /* Espace supplémentaire pour éviter que le bas ne soit caché par le footer/nav bar */
-            }
-        }
-
-        /* 2. Correction Paysage/Tablette : Optimisation de la Grille Produit (3 colonnes) */
-        /* Ces règles s'appliquent sur les écrans plus larges que le portrait mobile standard mais plus petits que le desktop */
-        @media (min-width: 600px) and (max-width: 1024px) {
-            .product-grid {
-                /* Force l'affichage sur 3 colonnes pour une meilleure utilisation de l'espace en paysage ou sur tablette */
-                grid-template-columns: repeat(3, 1fr) !important;
-            }
-        }
-        
-        /* Assurer 2 colonnes par défaut sur mobile portrait (si style.css ne le fait pas) */
-        @media (max-width: 599px) {
-             .product-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-             }
-        }
-        
-        /* Assurer un minimum de 4 colonnes sur les grands écrans (desktop) */
-        @media (min-width: 1200px) {
-            .product-grid {
-                grid-template-columns: repeat(4, 1fr) !important;
-            }
-        }
-
-        /* 3. NOUVELLE CORRECTION : Masquage de la barre de recherche en mode portrait mobile */
-        @media (max-width: 599px) and (orientation: portrait) {
-            .search-container {
-                display: none !important;
-            }
-        }
-        
-        /* 4. NOUVELLE CORRECTION CRITIQUE : Ergonomie Checkout Mobile (Code Promo et Paiement) */
-        @media (max-width: 600px) {
-            /* 4a. Ajuster le conteneur du code promo pour qu'il soit plus compact */
-            .promo-code-container {
-                /* Réduit la largeur du champ d'entrée */
-                width: 100%;
-                /* Assure que l'input et le bouton sont disposés de manière flexible */
-                display: flex;
-                gap: 5px;
-            }
-            /* L'input prend 80% de l'espace, le bouton prend 20% (ou s'ajuste) */
-            .promo-code-container input#promo-code-input {
-                flex: 4; /* Prend 4/5 de l'espace */
-                max-width: 80%;
-            }
-            .promo-code-container button#apply-promo-btn {
-                flex: 1; /* Prend 1/5 de l'espace */
-                min-width: 50px;
-                padding: 8px; /* Assure que la hauteur correspond à l'input */
-            }
-            
-            /* 4b. Ajuster les boutons de paiement pour une meilleure lisibilité */
-            .payment-method-selector {
-                /* Permet aux boutons de s'enrouler sur plusieurs lignes */
-                display: flex;
-                flex-wrap: wrap; 
-                gap: 5px; 
-            }
-            .payment-method-selector .pay-btn-select {
-                /* Permet à chaque bouton d'occuper la moitié de la largeur */
-                flex: 1 1 48%; 
-                margin: 0;
-                padding: 10px 5px; /* Réduire le padding horizontal */
-                font-size: 0.85rem; /* Rendre la police plus petite */
-                text-align: center;
-            }
-        }
-        
-        /* Fin des corrections CSS ajoutées */
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 
-<body data-api-url="https://kicks.kazabasket.workers.dev/api/main">
-
-    <div id="splash-screen">
-        <audio id="christmas-music" src="assets/jingle-bells.mp3" loop preload="auto"></audio>
+<body data-api-url="VOTRE_URL_APPS_SCRIPT_ICI">
+    
+    <section id="splash-screen">
         <div class="nwel-container">
             <div class="logo-container">
-                <img src="assets/logo-kixx.png" alt="Kixx">
+                <img src="assets/logot.png" alt="KICKS Logo">
             </div>
-            <h1>Joyeuses Fêtes ! 🎁</h1>
-            <p>Sneakers BasketBall 🏀, Chaussures Lifestyle.<br>
-            <span class="pulsing-text">Livraison Gratuite 48h – Qualité Authentique 🎅</span></p>
-
-            <button id="start-button">Chargement...</button>
-            <div id="countdown" class="timer"></div>
-
+            <h1>Bienvenue chez KICKS</h1>
+            <p>La magie de Noël s'installe !</p>
+            <p class="pulsing-text">Préparez-vous à entrer sur le site...</p>
+            
             <div class="payments">
-                <img src="assets/paypal.png" class="paypal-logo" alt="PayPal">
-                <img src="assets/applepay.png" alt="Apple Pay">
-                <img src="assets/mastercard.png" class="mastercard-logo" alt="Mastercard">
-                <img src="assets/googlepay.png" alt="Google Pay">
-                <img src="assets/visa.png" alt="Visa">
+                <img src="assets/p-stripe.png" alt="Stripe">
+                <img src="assets/p-visa.png" alt="Visa">
+                <img src="assets/p-paypal.png" alt="PayPal">
+                <img src="assets/p-klarna.png" alt="Klarna">
             </div>
-            <div class="credit-text-box">
-                *Un crédit vous engage et doit être remboursé.<br>
-                Vérifiez vos capacités de remboursement.<br>
-                Article L312-5 Code consommation.
-            </div>
+            
+            <button id="start-button">Cliquez pour la magie de Noël (X s) 🎵</button>
+            <div class="timer" id="countdown-timer">Entrée dans X s...</div>
         </div>
-    </div>
-
-    <div class="top-bar">
-        <div class="marquee-content">
-            <span>🚀 LIVRAISON GRATUITE DÈS 100€ • PAIEMENT 4X DISPONIBLE • AUTHENTICITÉ GARANTIE</span>
-            <span>🎅 Joyeuses Fêtes !!! • PAIEMENT 4X DISPONIBLE • Livraison Gratuite 24H-48h – Qualité Authentique 🏀</span>
-        </div>
-    </div>
+    </section>
 
     <header id="main-header">
-        <div class="header-container container">
-            
-            <div class="logo-wrapper">
-                <a href="#" onclick="window.location.reload();">
-                    <img src="assets/chaussuresbasketball-Nike-jordan-Puma-361 -peak-361.kixx.fr.png" alt="Kicks" class="logo-light">
-                    <img src="assets/chaussuresbasketball-Nike-jordan-Puma-361 -peak-361.kixx.fr.png" alt="Kicks Dark" class="logo-dark">
-                </a>
+        <div class="top-bar">
+            <div class="marquee-content">
+                <span>LIVRAISON 48H GARANTIE - AUTHENTICITÉ VÉRIFIÉE - PAIEMENT EN 4X AVEC PAYPAL & KLARNA</span>
             </div>
+        </div>
 
-            <div class="mobile-controls">
-                <button id="mobile-menu-trigger" aria-label="Filtres Mobile" class="hidden">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
+        <div class="container header-container">
+            <a href="#" class="logo-wrapper">
+                <img src="assets/logot.png" alt="Kicks Logo Light" class="logo-light">
+                <img src="assets/logot-dark.png" alt="Kicks Logo Dark" class="logo-dark hidden">
+            </a>
+
             <div class="search-container">
                 <div class="search-input-wrapper">
-                    <input type="text" id="search-input" placeholder="Rechercher (ex: Jordan 4...)" autocomplete="off">
-                    <button id="search-btn" aria-label="Rechercher">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </button>
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input-desktop" placeholder="Rechercher un modèle, une couleur...">
                 </div>
-                <div id="search-results" class="search-dropdown hidden"></div>
+                <div class="search-dropdown hidden" id="search-results">
+                    </div>
             </div>
 
             <div class="header-actions">
-                <button id="theme-toggle" aria-label="Changer Thème">
-                    <svg class="icon-sun" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                    <svg class="icon-moon hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                </button>
-
-                <button id="cart-trigger" aria-label="Panier">
-                    <div class="cart-icon-wrapper">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                        </svg>
-                        <span id="cart-count" class="cart-badge hidden">0</span>
+                <div class="mobile-controls">
+                    <button id="mobile-search-btn"><i class="fas fa-search fa-lg"></i></button>
+                    <div id="mobile-search-bar" class="search-container hidden">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-input-mobile" placeholder="Rechercher...">
+                        </div>
+                        <div class="search-dropdown hidden" id="search-results-mobile">
+                            </div>
                     </div>
-                </button>
+                </div>
+
+                <button id="theme-toggle" title="Changer de mode"><i class="fas fa-moon fa-lg"></i></button>
+
+                <div class="cart-icon-wrapper">
+                    <button id="open-cart-btn"><i class="fas fa-shopping-cart fa-lg"></i></button>
+                    <span class="cart-badge hidden" id="cart-item-count">0</span>
+                </div>
+
+                <div class="mobile-controls">
+                    <button id="open-filters-btn"><i class="fas fa-filter fa-lg"></i></button>
+                </div>
             </div>
         </div>
         
-        <div id="filters-bar" class="filters-scroll"></div>
+        <div id="quick-filters" class="filters-scroll">
+            <select id="filter-category" data-filter-type="category">
+                <option value="">Catégorie</option>
+                </select>
+            <select id="filter-brand" data-filter-type="brand">
+                <option value="">Marque</option>
+                </select>
+            <select id="filter-size" data-filter-type="size">
+                <option value="">Taille</option>
+                </select>
+            <button id="reset-filters-btn"><i class="fas fa-redo-alt"></i> Réinitialiser</button>
+        </div>
     </header>
-	<main id="main-content">
+
+    <main id="main-content" class="container">
         
-        <section id="category-hero-section" style="display:none;">
+        <section id="category-hero-section" class="hidden">
             <div id="category-hero-content">
-                </div>
+                <h2>Catégorie : <span id="category-title"></span></h2>
+                <p id="category-description"></p>
+            </div>
         </section>
 
         <section class="catalog-section">
-            <div class="container">
-                <div class="catalog-header">
-                    <h2 id="catalog-title">Catalogue</h2>
-                    <span id="result-count" class="text-muted">Chargement...</span>
+            <div class="product-grid" id="product-list">
+                </div>
+            
+            <div class="load-trigger" id="load-more-trigger"></div>
+
+            <div class="pagination-controls hidden" id="pagination-controls">
                 </div>
 
-                <div id="product-grid" class="product-grid">
-                    <div class="product-card skeleton"><div class="sk-image"></div><div class="sk-line" style="width:60%"></div><div class="sk-line" style="width:30%"></div></div>
-                    <div class="product-card skeleton"><div class="sk-image"></div><div class="sk-line" style="width:60%"></div><div class="sk-line" style="width:30%"></div></div>
-                    <div class="product-card skeleton"><div class="sk-image"></div><div class="sk-line" style="width:60%"></div><div class="sk-line" style="width:30%"></div></div>
-                    <div class="product-card skeleton"><div class="sk-image"></div><div class="sk-line" style="width:60%"></div><div class="sk-line" style="width:30%"></div></div>
-                </div>
-
-                <div id="load-more-trigger" class="load-trigger">
-                    <div class="loader-spinner hidden"></div>
-                </div>
-            </div>
-        </section>
-
-        <section class="video-section">
-            <div class="container">
-                <h3>Kicks</h3>
-                <div class="video-wrapper">
-                    <iframe 
-                        src="" 
-                        title="KICKS Video" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            </div>
+            <p id="no-results-msg" class="hidden" style="text-align: center; margin-top: 40px; font-size: 1.2rem; color: var(--text-muted);">
+                Aucun produit trouvé pour votre sélection.
+            </p>
         </section>
     </main>
-	<div id="cart-drawer" class="drawer">
+<div id="cart-drawer" class="drawer">
+        <div class="drawer-header">
+            <h3>Mon Panier (<span id="cart-qty">0</span>)</h3>
+            <button class="close-drawer" aria-label="Fermer le panier"><i class="fas fa-times"></i></button>
+        </div>
+        
         <div class="drawer-content">
-            <div class="drawer-header">
-                <h3>Mon Panier (<span id="cart-qty">0</span>)</h3>
-                <button class="close-drawer" aria-label="Fermer">&times;</button>
-            </div>
-            
-            <div class="drawer-body">
-                <div id="cart-items"></div>
+            <div id="cart-items"></div>
             </div>
 
-            <div class="drawer-footer">
-                <div class="cart-total">
-                    <span style="font-weight:600;">Total</span>
-                    <span id="cart-total-price" style="font-weight:700; font-size:1.1rem;">0.00 €</span>
-                </div>
-                <button id="checkout-trigger-btn" class="btn-primary full-width">VALIDER LA COMMANDE</button>
+        <div class="drawer-footer">
+            <div class="cart-totals">
+                <div><span>Total</span> <span id="cart-total-price" class="total-line">0.00 €</span></div>
             </div>
+            <button id="checkout-trigger-btn" class="btn-primary full-width">VALIDER LA COMMANDE</button>
         </div>
-        <div class="drawer-overlay"></div>
+    </div>
+    <div class="drawer-overlay"></div>
+
+    <div id="mobile-filter-drawer" class="drawer">
+        <div class="drawer-header">
+            <h3>Filtres & Tri</h3>
+            <button class="close-drawer" aria-label="Fermer les filtres"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="mobile-filters-content" class="drawer-content">
+            <p class="text-muted text-center">Chargement...</p>
+        </div>
+        <div class="drawer-footer">
+            <button id="apply-filters-btn" class="btn-primary full-width">VOIR LES RÉSULTATS</button>
+        </div>
     </div>
 
     <div id="product-modal" class="modal">
-        <div class="modal-content">
-            <button class="close-modal" aria-label="Fermer">&times;</button>
+        <div class="modal-content product-content">
+            <button class="close-modal" aria-label="Fermer"><i class="fas fa-times"></i></button>
+            
             <div class="product-modal-grid">
-                <div class="modal-gallery">
+                <div class="modal-media">
                     <div class="main-image-container">
                         <img id="modal-img-main" src="" alt="Produit">
-                    </div>
-                    <div id="modal-thumbnails" class="thumbnails-row"></div>
+                        </div>
+                    <div id="modal-thumbnails" class="thumbnails-row">
+                        </div>
                 </div>
                 
                 <div class="modal-details">
                     <span id="modal-brand" class="product-brand">MARQUE</span>
-                    <h2 id="modal-title">Nom du Modèle</h2>
+                    <h1 id="modal-title">Nom du Modèle</h1>
                     
-                    <div id="modal-price-container">
-                        <p id="modal-price" class="product-price">0.00 €</p>
+                    <div id="modal-price-container" class="price-group">
+                        <span id="modal-price">0.00 €</span>
                     </div>
                     
                     <div class="product-description">
-                        <p id="modal-desc" style="margin: 15px 0; color:var(--text-secondary); line-height:1.5;">Description...</p>
+                        <p id="modal-desc">Description du produit...</p>
                     </div>
 
-                    <div class="selectors">
-                        <div class="selector-group" style="margin-bottom:15px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                                <label style="font-weight:600; font-size:0.9rem;">Taille</label>
-                                <button id="trigger-gdt" style="text-decoration:underline; font-size:0.8rem; color:var(--text-secondary);">Guide des tailles</button>
+                    <div class="selectors-container">
+                        <div class="size-selector">
+                            <div class="flex-between">
+                                <h3>Taille</h3>
+                                <button id="trigger-gdt" class="link-btn"><i class="fas fa-ruler"></i> Guide des tailles</button>
                             </div>
-                            <div id="modal-sizes" class="size-grid"></div>
+                            <div id="modal-sizes" class="size-grid">
+                                </div>
                         </div>
 
-                        <div class="selector-group" style="margin-bottom:20px;">
-                            <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:5px;">Quantité</label>
-                            <input type="number" id="modal-qty" value="1" min="1" max="5" style="padding:10px; width:60px; border:1px solid var(--border-color); border-radius:4px; text-align:center;">
+                        <div class="qty-selector form-group" style="max-width: 100px;">
+                            <label>Quantité</label>
+                            <input type="number" id="modal-qty" value="1" min="1" max="5">
                         </div>
                     </div>
 
-                    <button id="add-to-cart-btn" class="btn-primary full-width">AJOUTER AU PANIER</button>
-                    <div id="stock-warning" class="stock-alert hidden" style="color:red; margin-top:10px; font-size:0.9rem;"></div>
+                    <div id="stock-warning" class="hidden stock-alert"></div>
+                    <button id="add-to-cart-btn">AJOUTER AU PANIER</button>
                 </div>
             </div>
             
             <div id="related-products-section" class="related-products-section hidden">
-                <h3>D’autres modèles qui méritent ton attention…</h3>
-                <div id="related-products-grid" class="product-grid related-grid"></div>
+                <h3>Cela pourrait vous plaire...</h3>
+                <div id="related-products-grid" class="product-grid related-grid">
+                    </div>
             </div>
         </div>
-        <div class="modal-overlay"></div>
     </div>
 
     <div id="modal-gdt" class="modal">
-        <div class="modal-content gdt-view">
-            <button class="close-modal" aria-label="Fermer">&times;</button>
-            <div class="gdt-wrapper">
-                <div class="gdt-internal-header">
-                    <h3>👟 Guide des Tailles</h3>
-                    <p>Mesure ton pied en cm.</p>
-                    <div class="controls" id="controls"></div>
-                </div>
-                <div class="gdt-layout-grid">
-                    <div id="mainArea"></div>
-                    <aside class="preview">
-                        <div class="brand-title" id="brandTitle">Marque</div>
-                    </aside>
-                </div>
+        <div class="modal-content" id="guide-tailles-modal">
+            <button class="close-modal"><i class="fas fa-times"></i></button>
+            <div class="gdt-header">
+                <h2>👟 Guide des Tailles</h2>
+                <div class="controls" id="controls"></div>
+            </div>
+            <div class="gdt-layout-grid">
+                <div id="mainArea" class="gdt-table-container"></div>
+                <aside class="preview">
+                    <div id="brandTitle" class="brand-title">Marque</div>
+                </aside>
             </div>
         </div>
-        <div class="modal-overlay"></div>
-    </div>
-    
-    <div id="modal-reviews" class="modal text-modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <button class="close-modal" aria-label="Fermer">&times;</button>
-            <div class="card" style="padding: 20px;">
-                <h2 style="color:var(--pop-accent-1); text-align:center;">Laissez votre Avis</h2>
-                <form id="reviewForm" style="text-align:left;">
-                    <label style="color:#999;">Nom / Pseudo :</label>
-                    <input type="text" id="review-name" required placeholder="Ton nom" style="width:100%; padding:10px; margin-bottom:10px; background:#0a0a0a; border:1px solid #333; color:#fff;">
-                    
-                    <label style="color:#999;">Note :</label>
-                    <div class="rating" style="display:flex; justify-content:center; flex-direction:row-reverse; margin-bottom:10px;">
-                        </div>
-                    
-                    <label style="color:#999;">Message :</label>
-                    <textarea id="review-message" rows="3" required placeholder="Ton avis..." style="width:100%; padding:10px; background:#0a0a0a; border:1px solid #333; color:#fff;"></textarea>
-                    
-                    <button type="submit" style="width:100%; background:var(--pop-accent-2); color:#000; font-weight:bold; padding:10px; border:none; cursor:pointer; margin-top:10px;">Envoyer</button>
-                </form>
-                <div id="reviewsContainer" style="margin-top:20px; max-height:300px; overflow-y:auto; text-align:left; color:var(--text-primary);"></div>
-            </div>
-        </div>
-        <div class="modal-overlay"></div>
     </div>
 
-
-    <div id="modal-checkout" class="modal">
-        <div class="modal-content" style="max-width: 900px; height: auto; max-height: 90vh;">
-            <button class="close-modal" aria-label="Fermer">&times;</button>
+    <div id="modal-checkout" class="modal modal-checkout">
+        <div class="modal-content">
+            <button class="close-modal"><i class="fas fa-times"></i></button>
             
             <div class="checkout-grid">
                 <div class="checkout-form-col">
+                    <h2>1. Vos Coordonnées</h2>
                     <form id="checkout-form">
-                        <div class="checkout-section">
-                            <h4>👤 Coordonnées</h4>
-                            <div class="form-group">
-                                <label>Email *</label>
-                                <input type="email" id="ck-email" name="email" required placeholder="email@exemple.com">
+                        <div class="form-group">
+                            <label for="ck-email">Email *</label>
+                            <input type="email" id="ck-email" placeholder="votre@email.com" required>
+                        </div>
+                        <div class="flex-row gap-10">
+                            <div class="form-group half">
+                                <label for="ck-prenom">Prénom *</label>
+                                <input type="text" id="ck-prenom" required>
                             </div>
-                            <div style="display:flex; gap:10px;">
-                                <div class="form-group" style="flex:1;">
-                                    <label>Prénom *</label>
-                                    <input type="text" id="ck-prenom" name="prenom" required>
-                                </div>
-                                <div class="form-group" style="flex:1;">
-                                    <label>Nom *</label>
-                                    <input type="text" id="ck-nom" name="nom" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Téléphone (Suivi) *</label>
-                                <input type="tel" id="ck-tel" name="tel" required placeholder="06..." inputmode="tel">
+                            <div class="form-group half">
+                                <label for="ck-nom">Nom *</label>
+                                <input type="text" id="ck-nom" required>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="ck-tel">Téléphone (Suivi Colis) *</label>
+                            <input type="tel" id="ck-tel" placeholder="06..." required>
+                        </div>
 
-                        <div class="checkout-section">
-                            <h4>📍 Adresse de Livraison</h4>
-                            <div class="form-group">
-                                <label>Pays</label>
-                                <select id="ck-pays" name="pays">
-                                    <option value="" disabled selected>Chargement...</option>
+                        <h2>2. Adresse de Livraison</h2>
+                        <div class="form-group">
+                            <label for="ck-pays">Pays *</label>
+                            <select id="ck-pays">
+                                <option value="" disabled selected>Choisir une destination...</option>
                                 </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ck-adresse">Adresse (Numéro et Rue) *</label>
+                            <input type="text" id="ck-adresse" required>
+                        </div>
+                        <div class="flex-row gap-10 relative">
+                            <div class="form-group half">
+                                <label for="ck-cp">Code Postal *</label>
+                                <input type="text" id="ck-cp" required autocomplete="off">
+                                <ul id="cp-suggestions" class="hidden"></ul>
                             </div>
-                            
-                            <div class="form-group">
-                                <label>Adresse *</label>
-                                <input type="text" id="ck-adresse" name="adresse" required placeholder="Numéro et Rue">
+                            <div class="form-group half">
+                                <label for="ck-ville">Ville *</label>
+                                <input type="text" id="ck-ville" required>
                             </div>
-                            
-                            <div style="display:flex; gap:10px; position:relative;">
-                                <div class="form-group" style="flex:1;">
-                                    <label>Code Postal *</label>
-                                    <input type="text" id="ck-cp" name="cp" required inputmode="numeric">
-                                </div>
-                                <div class="form-group" style="flex:2;">
-                                    <label>Ville *</label>
-                                    <input type="text" id="ck-ville" name="ville" required>
-                                </div>
-                                <ul id="cp-suggestions" class="hidden"></ul> 
-                            </div>
-                            </div>
+                        </div>
                     </form>
                 </div>
 
                 <div class="checkout-summary-col">
-                    <div class="checkout-section">
-                        <h4>🚚 Livraison</h4>
-                        <div class="shipping-options" id="shipping-options-container">
-                            <div style="color:#666; font-style:italic;">Remplissez l'adresse...</div>
+                    <h2>3. Livraison & Paiement</h2>
+                    
+                    <div class="summary-box">
+                        <div id="shipping-options-container" class="shipping-methods">
+                            <p class="text-muted">Veuillez renseigner votre adresse pour voir les tarifs.</p>
                         </div>
+
+                        <div class="cart-totals summary-totals">
+                            <div class="summary-line"><span>Sous-total</span> <span id="checkout-subtotal">0.00 €</span></div>
+                            <div class="summary-line"><span>Livraison</span> <span id="checkout-shipping">Calcul...</span></div>
+                            <div id="discount-row" class="summary-line hidden text-success"><span>Remise</span> <span id="checkout-discount">-0.00 €</span></div>
+                            <div id="fees-row" class="summary-line hidden text-danger"><span>Frais</span> <span id="checkout-fees">+0.00 €</span></div>
+                            <div class="summary-line total"><span>TOTAL À PAYER</span> <span id="checkout-total">0.00 €</span></div>
+                        </div>
+
+                        <div class="promo-code-container mt-15">
+                            <input type="text" id="promo-code-input" placeholder="Code Promo">
+                            <button id="apply-promo-btn" class="btn-secondary">OK</button>
+                        </div>
+                        <p id="promo-message" class="text-small mt-5"></p>
                     </div>
 
-                    <div class="checkout-summary">
-                        <div class="summary-row"><span>Sous-total</span><span id="checkout-subtotal">0.00 €</span></div>
-                        <div class="summary-row"><span>Livraison</span><span id="checkout-shipping">0.00 €</span></div>
-                        <div id="discount-row" class="summary-row summary-discount hidden" style="color:#2e7d32;"><span>Remise</span><span id="checkout-discount">- 0.00 €</span></div>
-                        <div id="fees-row" class="summary-row hidden" style="color:var(--error-color);"><span>Frais</span><span id="checkout-fees">+ 0.00 €</span></div>
-                        <div class="summary-total"><span>TOTAL</span><span id="checkout-total">0.00 €</span></div>
-
-                        <div style="margin: 20px 0 10px;">
-                            <label style="font-size:0.8rem; font-weight:bold; display:block; margin-bottom:5px;">Paiement</label>
-                            <div class="payment-method-selector">
-                                <button class="pay-btn-select selected" data-method="CARD">💳 Carte</button>
-                                <button class="pay-btn-select" data-method="PAYPAL_4X">🅿️ PayPal 4X</button>
-                                <button class="pay-btn-select" data-method="KLARNA">🌸 Klarna</button>
-                                <button class="pay-btn-select" data-method="VIREMENT">🏦 Virement</button>
-                            </div>
+                    <div class="payment-methods-box">
+                        <h3>Moyen de Paiement</h3>
+                        <div class="payment-method-selector">
+                            <button class="pay-btn-select selected" data-method="CARD"><i class="far fa-credit-card"></i> Carte</button>
+                            <button class="pay-btn-select" data-method="PAYPAL_4X"><i class="fab fa-paypal"></i> PayPal 4X</button>
+                            <button class="pay-btn-select" data-method="KLARNA">Klarna</button>
+                            <button class="pay-btn-select" data-method="VIREMENT"><i class="fas fa-university"></i> Virement</button>
                         </div>
+                        
+                        <div class="g-recaptcha mt-15" data-sitekey="6LdxFA4sAAAAAGi_sahJ3mfLrh4jsFWNXW8cfY2v"></div>
 
-                        <div class="promo-code-container" style="display:flex; gap:5px; margin-bottom:15px;">
-                            <input type="text" id="promo-code-input" placeholder="Code Promo" autocomplete="off" style="padding:8px; border:1px solid #ddd; border-radius:4px; flex:1;">
-                            <button id="apply-promo-btn">OK</button>
-                        </div>
-                        <div id="promo-message" style="font-size:0.8rem; margin-bottom:10px;"></div>
-
-                        <div class="g-recaptcha" style="margin-bottom:15px;"></div>
-
-                        <div class="payment-actions">
-                            <button type="button" id="btn-pay-stripe" class="btn-primary"><span id="btn-pay-label">💳 Payer par Carte</span></button>
-                            <div id="paypal-button-container" class="hidden" style="margin-top:10px;"></div>
-                            <button id="btn-pay-virement" class="btn-primary full-width hidden" style="margin-top:10px; background:#007bff;">💶 Virement</button>
+                        <div class="payment-actions mt-15">
+                            <button id="btn-pay-stripe" class="btn-primary full-width"><span id="btn-pay-label">💳 Payer par Carte</span></button>
+                            <div id="paypal-button-container" class="hidden"></div>
+                            <button id="btn-pay-virement" class="btn-primary full-width hidden">Confirmer le Virement</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="modal-overlay"></div>
     </div>
-    
-    <div id="modal-cgv" class="modal text-modal"><div class="modal-content"><button class="close-modal">&times;</button><h2>CGV</h2><div id="content-cgv">Chargement...</div></div><div class="modal-overlay"></div></div>
-    <div id="modal-mentions" class="modal text-modal"><div class="modal-content"><button class="close-modal">&times;</button><h2>Mentions</h2><div id="content-mentions">Chargement...</div></div><div class="modal-overlay"></div></div>
-    <div id="modal-paypal4x" class="modal text-modal"><div class="modal-content"><button class="close-modal">&times;</button><h2>Paiement 4x PayPal</h2><div id="content-paypal4x">Chargement...</div></div><div class="modal-overlay"></div></div>
-    <div id="modal-klarna" class="modal text-modal"><div class="modal-content"><button class="close-modal">&times;</button><h2>Paiement Klarna</h2><div id="content-klarna">Chargement...</div></div><div class="modal-overlay"></div></div>
 
-    <div id="modal-livraison" class="modal text-modal">
+    <div id="modal-cgv" class="modal text-modal"><div class="modal-content"><button class="close-modal"><i class="fas fa-times"></i></button><h2>CGV</h2><div id="content-cgv"></div></div></div>
+    <div id="modal-mentions" class="modal text-modal"><div class="modal-content"><button class="close-modal"><i class="fas fa-times"></i></button><h2>Mentions Légales</h2><div id="content-mentions"></div></div></div>
+    <div id="modal-livraison" class="modal text-modal"><div class="modal-content"><button class="close-modal"><i class="fas fa-times"></i></button><h2>Livraison</h2><div id="content-livraison"></div></div></div>
+    <div id="modal-paypal4x" class="modal text-modal"><div class="modal-content"><button class="close-modal"><i class="fas fa-times"></i></button><h2>Paiement 4x</h2><div id="content-paypal4x"></div></div></div>
+    <div id="modal-klarna" class="modal text-modal"><div class="modal-content"><button class="close-modal"><i class="fas fa-times"></i></button><h2>Klarna</h2><div id="content-klarna"></div></div></div>
+    
+    <div id="modal-reviews" class="modal text-modal">
         <div class="modal-content">
-            <button class="close-modal">&times;</button>
-            <h2>Livraison</h2>
-            <div id="content-livraison">Chargement...</div>
-        </div>
-        <div class="modal-overlay"></div>
-    </div>
-    
-    <div id="mobile-filter-drawer" class="drawer">
-        <div class="drawer-content">
-            <div class="drawer-header">
-                <h3>Filtres & Options</h3>
-                <button class="close-drawer" aria-label="Fermer">&times;</button>
-            </div>
-            <div id="mobile-filters-content" class="drawer-body">
-                <p style="text-align: center; color: var(--text-muted);">Chargement des filtres...</p>
-                </div>
-            <div class="drawer-footer">
-                <button id="apply-filters-btn" class="btn-primary full-width">APPLIQUER LES FILTRES</button>
+            <button class="close-modal"><i class="fas fa-times"></i></button>
+            <div class="card p-20">
+                <h2 style="color:var(--pop-accent-1); text-align:center;">Laissez votre Avis</h2>
+                <form id="reviewForm">
+                    <input type="text" id="review-name" required placeholder="Votre nom" class="input-dark mb-10">
+                    <div class="rating mb-10">
+                        </div>
+                    <textarea id="review-message" rows="3" required placeholder="Votre avis..." class="input-dark"></textarea>
+                    <button type="submit" class="btn-pop mt-10">Envoyer</button>
+                </form>
+                <div id="reviewsContainer" class="mt-20"></div>
             </div>
         </div>
-        <div class="drawer-overlay"></div>
     </div>
-    
+
     <footer id="main-footer">
-        <div class="container footer-container">
+        <div class="container">
             <div class="footer-cols">
                 <div class="footer-col">
-                    <h4>Informations</h4>
+                    <h3>Informations</h3>
                     <ul>
-                        <li><button data-modal="modal-livraison">Livraison</button></li>
-                        <li><button data-modal="modal-cgv">CGV</button></li>
+                        <li><button data-modal="modal-livraison">Livraison & Retours</button></li>
+                        <li><button data-modal="modal-cgv">Conditions Générales (CGV)</button></li>
                         <li><button data-modal="modal-mentions">Mentions Légales</button></li>
-                        <li><button data-modal="modal-paypal4x">Paiement 4x PayPal</button></li>
-                        <li><button data-modal="modal-klarna">Paiement Klarna</button></li>
                         <li><button data-modal="modal-reviews">Avis Clients</button></li>
-                        <li><a href="https://www.laposte.fr/outils/suivre-vos-envois" target="_blank">Suivre ma commande</a></li>
+                        <li><a href="https://www.laposte.fr/outils/suivre-vos-envois" target="_blank">Suivre mon colis</a></li>
                     </ul>
                 </div>
                 
+                <div class="footer-col">
+                    <h3>Paiement</h3>
+                    <ul>
+                        <li><button data-modal="modal-paypal4x">Facilités PayPal 4x</button></li>
+                        <li><button data-modal="modal-klarna">Paiement Klarna</button></li>
+                    </ul>
+                    <div class="payment-icons mt-10">
+                        <i class="fab fa-stripe fa-2x"></i>
+                        <i class="fab fa-cc-visa fa-2x"></i>
+                        <i class="fab fa-cc-mastercard fa-2x"></i>
+                        <i class="fab fa-paypal fa-2x"></i>
+                        <i class="fab fa-apple-pay fa-2x"></i>
+                    </div>
+                </div>
+
                 <div class="footer-col newsletter-col">
-                    <h4>Newsletter</h4>
-                    <p style="font-size:0.8rem; margin-bottom:10px; color:var(--text-secondary);">Inscris-toi pour des offres exclusives.</p>
-                    <form id="newsletter-form" style="display:flex; flex-direction:column; gap:10px;">
-                        <input type="text" name="prenom" placeholder="Prénom" required style="padding:8px; border:1px solid var(--border-color); border-radius:4px;">
-                        <input type="text" name="nom" placeholder="Nom" required style="padding:8px; border:1px solid var(--border-color); border-radius:4px;">
-                        <input type="email" name="email" placeholder="Email" required style="padding:8px; border:1px solid var(--border-color); border-radius:4px;">
-                        <button type="submit" class="btn-primary" style="margin-top:5px; padding:10px;">S'INSCRIRE</button>
+                    <h3>Newsletter</h3>
+                    <p>Rejoignez le club KICKS pour les drops exclusifs.</p>
+                    <form id="newsletter-form">
+                        <input type="email" placeholder="Votre email..." required>
+                        <button type="submit">OK</button>
                     </form>
                 </div>
             </div>
-            
-            <hr style="border:0; border-top:1px solid var(--border-color); margin:30px 0;">
-            
-            <div class="footer-payment-info" style="text-align:center;">
-                <div class="payment-icons">
-    <a href="https://stripe.com/fr/privacy" target="_blank" aria-label="Confidentialité Stripe">
-        <img src="assets/stripe.png" alt="Stripe">
-    </a>
-    <a href="https://www.visa.fr/legal/global-privacy-notice.html" target="_blank" aria-label="Conditions Visa">
-        <img src="assets/visa.png" alt="Visa">
-    </a>
-    <a href="https://www.mastercard.fr/fr-fr/vision/ce-que-nous-faisons/confidentialite.html" target="_blank" aria-label="Conditions Mastercard">
-        <img src="assets/mastercard.png" alt="Mastercard">
-    </a>
-    <a href="https://www.paypal.com/fr/webapps/mpp/ua/privacy-full" target="_blank" aria-label="Confidentialité PayPal">
-        <img src="assets/paypal.png" alt="PayPal">
-    </a>
-    <a href="https://payments.google.com/payments/apis-secure/get_legal_document?ldo=0&ldt=privacynotice&ldl=fr" target="_blank" aria-label="Confidentialité Google Pay">
-        <img src="assets/googlepay.png" alt="Google Pay">
-    </a>
-    <a href="https://www.apple.com/fr/legal/privacy/data/fr/apple-pay/" target="_blank" aria-label="Confidentialité Apple Pay">
-        <img src="assets/applepay.png" alt="Apple Pay">
-    </a>
-    <a href="https://www.klarna.com/fr/confidentialite/" target="_blank" aria-label="Confidentialité Klarna">
-        <img src="assets/klarna.png" alt="Klarna">
-    </a>
-</div>
-                <div class="payment-legal-text" style="font-size:0.75rem; color:var(--text-muted); margin-top:15px; line-height:1.4;">
-                    <p>🔒 <strong>Paiement 100% Sécurisé</strong> : Toutes les transactions sont chiffrées via protocole SSL et certifiées 3D Secure.</p>
-                    <p style="margin-top:5px;">
-                        💳 <strong>Paiement en 4X</strong> : Facilités de paiement : Le paiement en plusieurs fois (PayPal 4x / Klarna) inclut des frais de dossier calculés au panier. Un crédit vous engage et doit être remboursé. Vérifiez vos capacités de remboursement avant de vous engager.
-                        <a href="https://www.paypalobjects.com/marketing/ua/pdf/FR/fr/pay-in-4x-full.pdf" target="_blank" style="text-decoration:underline;">Voir conditions</a>
-                    </p>
-                </div>
-                <div class="recaptcha-legal" style="margin-top:20px; font-size:0.7rem; opacity:0.6;">
-                    Protected by reCAPTCHA. 
-                    <a href="https://policies.google.com/privacy" target="_blank">Privacy</a> - 
-                    <a href="https://policies.google.com/terms" target="_blank">Terms</a>
-                </div>
-                <p class="copyright" style="margin-top:30px; font-weight:600;">&copy; 2025 KICKS. Tous droits réservés.</p>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 KICKS - Sneakers Exclusives. Tous droits réservés.</p>
+                <p class="text-xs text-muted mt-5">Site sécurisé par SSL. Paiements chiffrés.</p>
             </div>
         </div>
     </footer>
@@ -635,16 +409,16 @@
         <img src="assets/whatsapp.png" alt="WhatsApp">
     </a>
 
+    <script src="main.js"></script>
+
     <script>
         (function() {
             let seconds = 3;
-            const countdownEl = document.getElementById('countdown');
+            const countdownEl = document.getElementById('countdown-timer');
             const startButton = document.getElementById('start-button');
-            const music = document.getElementById('christmas-music');
             const splash = document.getElementById('splash-screen');
 
             function enterSite() {
-                if(music) music.pause();
                 if(splash) {
                     splash.style.opacity = '0';
                     setTimeout(() => {
@@ -654,16 +428,12 @@
                 }
             }
 
-            function startExperience() {
-                if(music) {
-                    music.muted = false;
-                    music.volume = 0.5;
-                    music.play().catch(e => console.log("Audio autoplay bloqué"));
-                }
-                if(startButton) startButton.style.display = 'none';
-                if(countdownEl) {
-                    countdownEl.style.display = 'block';
-                    countdownEl.textContent = `Entrée dans ${seconds}s...`;
+            if (sessionStorage.getItem('kicks_splash_seen')) {
+                if(splash) splash.style.display = 'none';
+            } else {
+                if(startButton) {
+                    startButton.textContent = `Entrer sur le site (${seconds}s) 🎵`;
+                    startButton.addEventListener('click', enterSite);
                 }
                 const timer = setInterval(() => {
                     seconds--;
@@ -674,18 +444,7 @@
                     }
                 }, 1000);
             }
-
-            if (sessionStorage.getItem('kicks_splash_seen')) {
-                if(splash) splash.style.display = 'none';
-            } else {
-                if(startButton) {
-                    startButton.textContent = `Cliquez pour la magie de Noël (${seconds}s) 🎵`;
-                    startButton.addEventListener('click', startExperience);
-                }
-            }
         })();
     </script>
-
-    <script src="main.js" type="text/javascript"></script>
 </body>
 </html>
