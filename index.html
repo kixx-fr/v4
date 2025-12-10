@@ -86,6 +86,48 @@
             margin: 12px auto 0; text-align: left; color: #f7f7f7;
         }
 		
+        /* === CORRECTIONS VITALES V32.6 : Défilement & Optimisation Mobile === */
+    
+        /* 1. Correction critique : Défilement vertical des modales (Produit, Checkout, Textes) sur mobile/tablette */
+        @media (max-width: 1024px) {
+            .modal-content {
+                /* Fixe la hauteur maximale à la fenêtre visible pour permettre le défilement */
+                height: 100%; 
+                max-height: 100vh;
+                overflow-y: auto; /* Active le défilement si le contenu est plus grand que la hauteur disponible */
+                -webkit-overflow-scrolling: touch; /* Améliore le défilement sur iOS */
+            }
+            
+            /* Assure que la modale produit utilise toute la hauteur pour que .modal-content puisse défiler */
+            #product-modal .modal-content {
+                padding-bottom: 80px; /* Espace supplémentaire pour éviter que le bas ne soit caché par le footer/nav bar */
+            }
+        }
+
+        /* 2. Correction Paysage/Tablette : Optimisation de la Grille Produit (3 colonnes) */
+        /* Ces règles s'appliquent sur les écrans plus larges que le portrait mobile standard mais plus petits que le desktop */
+        @media (min-width: 600px) and (max-width: 1024px) {
+            .product-grid {
+                /* Force l'affichage sur 3 colonnes pour une meilleure utilisation de l'espace en paysage ou sur tablette */
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
+        
+        /* Assurer 2 colonnes par défaut sur mobile portrait (si style.css ne le fait pas) */
+        @media (max-width: 599px) {
+             .product-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+             }
+        }
+        
+        /* Assurer un minimum de 4 colonnes sur les grands écrans (desktop) */
+        @media (min-width: 1200px) {
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+        }
+        
+        /* Fin des corrections CSS ajoutées */
     </style>
 </head>
 
