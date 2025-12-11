@@ -928,3 +928,43 @@ body.dark-mode .thumbnails-row img { background: #333; border-color: #444; }
         line-height: 25px;
     }
 }
+/* =================================================================
+   CORRECTIF URGENT : PAIEMENT MOBILE & WHATSAPP
+   ================================================================= */
+
+/* 1. Force la modale (Paiement/Produit) à passer DEVANT le bouton WhatsApp */
+.modal {
+    z-index: 10001 !important; /* WhatsApp est à 9000, on passe au-dessus */
+}
+
+/* 2. Optimisation spécifique pour le Checkout sur Mobile */
+@media (max-width: 768px) {
+    
+    /* Ajoute de l'espace en bas du résumé de commande pour scroller */
+    .checkout-summary-col {
+        padding-bottom: 60px !important; 
+        margin-bottom: 0 !important;
+    }
+
+    /* Assure que la modale a assez d'espace en bas */
+    .modal-checkout .modal-content {
+        padding-bottom: 40px !important;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Sécurise l'affichage du gros bouton "PAYER" */
+    #btn-pay-stripe, 
+    #btn-pay-virement, 
+    #paypal-button-container {
+        margin-bottom: 30px !important; /* Espace sous le bouton */
+        position: relative;
+        z-index: 10; /* S'assure qu'il est cliquable */
+    }
+    
+    /* Ajustement des petits boutons de méthode de paiement (Carte, PayPal, etc.) */
+    .payment-method-selector .pay-btn-select {
+        min-width: 45% !important; /* S'assure qu'ils prennent bien la largeur */
+        margin-bottom: 5px;
+    }
+}
