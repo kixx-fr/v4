@@ -840,3 +840,91 @@ body.dark-mode .thumbnails-row img { background: #333; border-color: #444; }
 .brand-title { font-size:20px; font-weight:800; color:var(--text-primary); margin-bottom:6px; }
 .logo-image { width: 180px; max-height: 80px; object-fit: contain; display: block; margin: 6px auto 12px auto; }
 .note { font-size:15px; color:var(--text-secondary); line-height:1.5; }
+/* =================================================================
+   CORRECTIF AFFICHAGE MOBILE (A COLLER EN BAS DE STYLE.CSS)
+   ================================================================= */
+
+@media (max-width: 768px) {
+    
+    /* 1. Stabiliser la grille */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr) !important; /* Force 2 colonnes */
+        gap: 10px !important; /* Espace réduit entre les cartes */
+    }
+
+    /* 2. Forcer le carré gris même si l'image plante */
+    .product-image-wrapper {
+        width: 100%;
+        aspect-ratio: 1 / 1; /* Force un carré parfait */
+        background-color: #f4f4f4; /* Fond gris si pas d'image */
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+    }
+
+    /* 3. Empêcher l'image de déborder ou de casser le ratio */
+    .product-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* L'image s'adapte sans être coupée */
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    /* 4. Réduire drastiquement la taille des badges sur mobile */
+    .category-badge, 
+    span[style*="background:black"], 
+    span[style*="background:#ff6600"] { 
+        /* Cible vos badges actuels */
+        font-size: 0.6rem !important; /* Texte beaucoup plus petit */
+        padding: 2px 5px !important;
+        top: 5px !important;
+        left: 5px !important;
+        right: auto !important;
+        max-width: 80%; /* Empêche le badge de dépasser */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+
+    /* Si vous avez deux badges, on décale le deuxième pour éviter le chevauchement */
+    .product-image-wrapper span:nth-of-type(2) {
+        top: 25px !important; /* Le place sous le premier */
+    }
+
+    /* 5. Nettoyer le texte du produit */
+    .product-info {
+        padding: 8px 5px !important;
+    }
+    
+    .product-brand {
+        font-size: 0.7rem !important;
+        margin-bottom: 2px;
+    }
+
+    .product-title {
+        font-size: 0.85rem !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Met "..." si le titre est trop long */
+        margin-bottom: 5px;
+    }
+
+    .product-price {
+        font-size: 0.95rem !important;
+    }
+    
+    /* Cacher le bouton (+) sur mobile s'il gêne, on clique sur la carte de toute façon */
+    .add-btn-mini {
+        width: 25px;
+        height: 25px;
+        font-size: 1rem;
+        line-height: 25px;
+    }
+}
